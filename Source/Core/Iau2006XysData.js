@@ -27,7 +27,7 @@ define([
      * @constructor
      *
      * @param {Object} [options] Object with the following properties:
-     * @param {String} [options.xysFileUrlTemplate='Assets/IAU2006_XYS/IAU2006_XYS_{0}.json'] A template URL for obtaining the XYS data.  In the template,
+     * @param {String} [options.xysFileUrlTemplate='Assets/IAU2006_XYS/IAU2006_XYS_{0}.txt'] A template URL for obtaining the XYS data.  In the template,
      *                 `{0}` will be replaced with the file index.
      * @param {Number} [options.interpolationOrder=9] The order of interpolation to perform on the XYS data.
      * @param {Number} [options.sampleZeroJulianEphemerisDate=2442396.5] The Julian ephemeris date (JED) of the
@@ -241,7 +241,7 @@ define([
         if (defined(xysFileUrlTemplate)) {
             chunkUrl = xysFileUrlTemplate.replace('{0}', chunkIndex);
         } else {
-            chunkUrl = buildModuleUrl('Assets/IAU2006_XYS/IAU2006_XYS_' + chunkIndex + '.json');
+            chunkUrl = buildModuleUrl('Assets/IAU2006_XYS/IAU2006_XYS_' + chunkIndex + '.txt');
         }
 
         when(loadJson(chunkUrl), function(chunk) {

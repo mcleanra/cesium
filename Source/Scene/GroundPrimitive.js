@@ -1006,7 +1006,7 @@ define([
             return initPromise;
         }
 
-        GroundPrimitive._initPromise = loadJson(buildModuleUrl('Assets/approximateTerrainHeights.json')).then(function(json) {
+        GroundPrimitive._initPromise = loadJson(buildModuleUrl('Assets/approximateTerrainHeights.txt')).then(function(json) {
             GroundPrimitive._initialized = true;
             GroundPrimitive._terrainHeights = json;
         });
