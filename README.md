@@ -6,6 +6,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Docs](https://img.shields.io/badge/docs-online-orange.svg)](http://cesiumjs.org/tutorials.html)
 
 ### This fork of Cesium has been modified so that it can be used inside SharePoint.
+- All JSON files have been changed to .txt
+- iFrame in the infoBox has been replaced with a div
 
 Cesium is a JavaScript library for creating 3D globes and 2D maps in a web browser without a plugin. It uses WebGL for hardware-accelerated graphics, and is cross-platform, cross-browser, and tuned for dynamic-data visualization.
 
