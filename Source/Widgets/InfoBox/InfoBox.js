@@ -73,7 +73,7 @@ click: function () { closeClicked.raiseEvent(this); }');
 
         //removed the iframe and replaced with a DIV for IE11 compatibility
         var frame = document.createElement('div');
-        frame.className = 'cesium-infoBox-iframe';
+        frame.className = 'cesium-infoBox-frame';
 
         infoElement.appendChild(frame);
 

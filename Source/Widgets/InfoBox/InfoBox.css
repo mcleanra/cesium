@@ -97,11 +97,11 @@ button.cesium-infoBox-close:active {
     color: #000;
 }
 
-.cesium-infoBox-bodyless .cesium-infoBox-iframe {
+.cesium-infoBox-bodyless .cesium-infoBox-frame {
     display: none;
 }
 
-.cesium-infoBox-iframe {
+.cesium-infoBox-frame {
     border: none;
     width: 100%; /* Fallback */
     width: calc(100% - 2px);
