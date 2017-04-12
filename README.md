@@ -27,9 +27,9 @@ Build a release.
 
 To deploy: drop the cesium/Build/Cesium folder into SharePoint and reference these files from your page:
 
-<code>
+```html
 <link rel="stylesheet" href="./cesium/Widgets/widgets.css" />
 <link rel="stylesheet" href="./cesium/Widgets/CesiumWidget/CesiumWidget.css" />
 <link rel="stylesheet" href="./cesium/Widgets/BaseLayerPicker/BaseLayerPicker.css" />
 <script src="./cesium/Cesium.js"></script>
-</code>
+```
