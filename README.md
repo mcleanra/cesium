@@ -35,3 +35,9 @@ To deploy: drop the cesium/Build/Cesium folder into SharePoint and reference the
 <link rel="stylesheet" href="./cesium/Widgets/BaseLayerPicker/BaseLayerPicker.css" />
 <script src="./cesium/Cesium.js"></script>
 ```
+
+### Upgrading
+
+<pre>git fetch upstream</pre>
+<pre>git merge upstream/master</pre>
+<pre>git push</pre>
