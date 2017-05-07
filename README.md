@@ -36,8 +36,9 @@ To deploy: drop the cesium/Build/Cesium folder into SharePoint and reference the
 <script src="./cesium/Cesium.js"></script>
 ```
 
-### Upgrading
+### Updating this fork
 
+<pre>git remote add upstream https://github.com/AnalyticalGraphicsInc/cesium.git</pre>
 <pre>git fetch upstream</pre>
 <pre>git merge upstream/master</pre>
 <pre>git push</pre>
