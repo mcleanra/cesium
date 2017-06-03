@@ -80,6 +80,7 @@ defineSuite([
     var boxNoIndicesUrl = './Data/Models/Box-NoIndices/box-noindices.gltf';
     var texturedBoxUrl = './Data/Models/Box-Textured/CesiumTexturedBoxTest.gltf';
     var texturedBoxSeparateUrl = './Data/Models/Box-Textured-Separate/CesiumTexturedBoxTest.gltf';
+    var texturedBoxBasePathUrl = './Data/Models/Box-Textured-BasePath/CesiumTexturedBoxTest.gltf';
     var texturedBoxKTXUrl = './Data/Models/Box-Textured-KTX/CesiumTexturedBoxTest.gltf';
     var texturedBoxKTXBinaryUrl = './Data/Models/Box-Textured-KTX-Binary/CesiumTexturedBoxTest.glb';
     var texturedBoxKTXEmbeddedUrl = './Data/Models/Box-Textured-KTX-Embedded/CesiumTexturedBoxTest.gltf';
@@ -270,6 +271,17 @@ defineSuite([
         });
         expect(model._basePath).toEndWith(params);
         expect(model._baseUri).toEndWith(params);
+    });
+
+    it('fromGltf takes a base path', function() {
+        var url = texturedBoxBasePathUrl;
+        var basePath = './Data/Models/Box-Textured-Separate/';
+        var model = Model.fromGltf({
+            url: url,
+            basePath: basePath
+        });
+        expect(model._basePath).toEndWith(basePath);
+        expect(model._cacheKey).toEndWith(basePath);
     });
 
     it('renders', function() {
@@ -1917,7 +1929,6 @@ defineSuite([
             }
             Matrix4.multiplyByMatrix3(m.modelMatrix, rotate, m.modelMatrix);
 
-            /* jshint loopfunc: true */
             expect(scene).toRenderAndCall(function(rgba) {
                 expect(rgba).not.toEqual([0, 0, 0, 255]);
                 expect(rgba).not.toEqual(oldPixelColor);
