@@ -1,4 +1,5 @@
 /*jslint node: true, latedef: nofunc*/
+/*eslint-env node*/
 'use strict';
 
 var fs = require('fs');
@@ -11,7 +12,6 @@ var readline = require('readline');
 var request = require('request');
 
 var globby = require('globby');
-var jshint = require('gulp-jshint');
 var gulpTap = require('gulp-tap');
 var rimraf = require('rimraf');
 var glslStripComments = require('glsl-strip-comments');
@@ -22,7 +22,6 @@ var gulpInsert = require('gulp-insert');
 var gulpZip = require('gulp-zip');
 var gulpRename = require('gulp-rename');
 var gulpReplace = require('gulp-replace');
-var os = require('os');
 var Promise = require('bluebird');
 var requirejs = require('requirejs');
 var karma = require('karma').Server;
@@ -38,7 +37,7 @@ if (/\.0$/.test(version)) {
 }
 
 var karmaConfigFile = path.join(__dirname, 'Specs/karma.conf.js');
-var travisDeployUrl = "http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/";
+var travisDeployUrl = 'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/';
 
 //Gulp doesn't seem to have a way to get the currently running tasks for setting
 //per-task variables.  We use the command line argument here to detect which task is being run.
@@ -65,17 +64,6 @@ var sourceFiles = ['Source/**/*.js',
 var buildFiles = ['Specs/**/*.js',
                   '!Specs/SpecList.js',
                   'Source/Shaders/**/*.glsl'];
-
-var jsHintFiles = ['Source/**/*.js',
-                   '!Source/Shaders/**',
-                   '!Source/ThirdParty/**',
-                   '!Source/Workers/cesiumWorkerBootstrapper.js',
-                   'Apps/**/*.js',
-                   'Apps/Sandcastle/gallery/*.html',
-                   '!Apps/Sandcastle/ThirdParty/**',
-                   'Specs/**/*.js',
-                   'Tools/buildTasks/**/*.js',
-                   'gulpfile.js'];
 
 var filesToClean = ['Source/Cesium.js',
                     'Build',
@@ -233,27 +221,6 @@ gulp.task('instrumentForCoverage', ['build'], function(done) {
     });
 });
 
-gulp.task('jsHint', ['build'], function() {
-    var stream = gulp.src(jsHintFiles)
-        .pipe(jshint.extract('auto'))
-        .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'));
-
-    if (yargs.argv.failTaskOnError) {
-        stream = stream.pipe(jshint.reporter('fail'));
-    }
-    return stream;
-});
-
-gulp.task('jsHint-watch', function() {
-    gulp.watch(jsHintFiles).on('change', function(event) {
-        gulp.src(event.path)
-            .pipe(jshint.extract('auto'))
-            .pipe(jshint())
-            .pipe(jshint.reporter('jshint-stylish'));
-    });
-});
-
 gulp.task('makeZipFile', ['release'], function() {
     //For now we regenerate the JS glsl to force it to be unminified in the release zip
     //See https://github.com/AnalyticalGraphicsInc/cesium/pull/3106#discussion_r42793558 for discussion.
@@ -287,7 +254,7 @@ gulp.task('makeZipFile', ['release'], function() {
         nodir : true
     });
 
-    var indexSrc = gulp.src('index.release.html').pipe(gulpRename("index.html"));
+    var indexSrc = gulp.src('index.release.html').pipe(gulpRename('index.html'));
 
     return eventStream.merge(builtSrc, staticSrc, indexSrc)
         .pipe(gulpTap(function(file) {
@@ -677,8 +644,7 @@ gulp.task('generateStubs', ['build'], function(done) {
     var contents = '\
 /*global define,Cesium*/\n\
 (function() {\n\
-\'use strict\';\n\
-/*jshint sub:true*/\n';
+\'use strict\';\n';
     var modulePathMappings = [];
 
     globby.sync(sourceFiles).forEach(function(file) {
@@ -778,9 +744,8 @@ gulp.task('sortRequires', function() {
                     return -1;
                 } else if (aName > bName) {
                     return 1;
-                } else {
-                    return 0;
                 }
+                return 0;
             });
 
             if (preserveFirst) {
@@ -1095,9 +1060,8 @@ function createCesiumJs() {
 /*global define*/\n\
 define([' + moduleIds.join(', ') + '], function(' + parameters.join(', ') + ') {\n\
   \'use strict\';\n\
-  /*jshint sub:true*/\n\
   var Cesium = {\n\
-    VERSION : "' + version + '",\n\
+    VERSION : \'' + version + '\',\n\
     _shaders : {}\n\
   };\n\
   ' + assignments.join('\n  ') + '\n\
@@ -1115,7 +1079,7 @@ function createSpecList() {
         specs.push("'" + filePathToModuleId(file) + "'");
     });
 
-    var contents = '/*jshint unused: false*/\nvar specs = [' + specs.join(',') + '];';
+    var contents = '/*eslint-disable no-unused-vars*/\n/*eslint-disable no-implicit-globals*/\nvar specs = [' + specs.join(',') + '];';
     fs.writeFileSync(path.join('Specs', 'SpecList.js'), contents);
 }
 
@@ -1154,9 +1118,8 @@ function createGalleryList() {
         return -1;
       } else if (a.name > b.name) {
         return 1;
-      } else {
-        return 0;
       }
+      return 0;
     });
 
     var helloWorldIndex = Math.max(demoObjects.indexOf(helloWorld), 0);
@@ -1175,7 +1138,7 @@ var gallery_demos = [' + demoJSONs.join(', ') + '];';
 }
 
 function createJsHintOptions() {
-    var primary = JSON.parse(fs.readFileSync('.jshintrc', 'utf8'));
+    var primary = JSON.parse(fs.readFileSync(path.join('Apps', '.jshintrc'), 'utf8'));
     var gallery = JSON.parse(fs.readFileSync(path.join('Apps', 'Sandcastle', '.jshintrc'), 'utf8'));
     primary.jasmine = false;
     primary.predef = gallery.predef;

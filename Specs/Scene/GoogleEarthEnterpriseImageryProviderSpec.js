@@ -11,6 +11,7 @@ defineSuite([
     'Core/loadImage',
     'Core/loadWithXhr',
     'Core/Rectangle',
+    'Core/RequestScheduler',
     'Scene/DiscardMissingTileImagePolicy',
     'Scene/Imagery',
     'Scene/ImageryLayer',
@@ -30,6 +31,7 @@ defineSuite([
     loadImage,
     loadWithXhr,
     Rectangle,
+    RequestScheduler,
     DiscardMissingTileImagePolicy,
     Imagery,
     ImageryLayer,
@@ -38,6 +40,10 @@ defineSuite([
     pollToPromise,
     when) {
     'use strict';
+
+    beforeEach(function() {
+        RequestScheduler.clearForSpecs();
+    });
 
     beforeAll(function() {
         decodeGoogleEarthEnterpriseData.passThroughDataForTesting = true;
@@ -127,6 +133,28 @@ defineSuite([
             expect(imageryProvider.ready).toBe(false);
             expect(e.message).toContain(url);
         });
+    });
+
+    it('readyPromise rejects if there isn\'t imagery', function() {
+        installMockGetQuadTreePacket();
+
+        var metadata = new GoogleEarthEnterpriseMetadata({
+            url : 'made/up/url'
+        });
+
+        metadata.imageryPresent = false;
+
+        imageryProvider = new GoogleEarthEnterpriseImageryProvider({
+            metadata : metadata
+        });
+
+        return imageryProvider.readyPromise
+            .then(function() {
+                fail('Server does not have imagery, so we shouldn\'t resolve.');
+            })
+            .otherwise(function() {
+                expect(imageryProvider.ready).toBe(false);
+            });
     });
 
     it('returns false for hasAlphaChannel', function() {
@@ -237,6 +265,9 @@ defineSuite([
             if (tries < 3) {
                 error.retry = true;
             }
+            setTimeout(function() {
+                RequestScheduler.update();
+            }, 1);
         });
 
         loadWithXhr.load = function(url, responseType, method, data, headers, deferred, overrideMimeType) {
@@ -257,6 +288,7 @@ defineSuite([
             var imagery = new Imagery(layer, 0, 0, 0);
             imagery.addReference();
             layer._requestImagery(imagery);
+            RequestScheduler.update();
 
             return pollToPromise(function() {
                 return imagery.state === ImageryState.RECEIVED;
