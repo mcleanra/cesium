@@ -1,4 +1,3 @@
-/*global define*/
 define([
         '../Core/arrayFill',
         '../Core/Cartesian2',
@@ -68,6 +67,9 @@ define([
         StencilFunction,
         StencilOperation) {
     'use strict';
+
+    var DEFAULT_COLOR_VALUE = Color.WHITE;
+    var DEFAULT_SHOW_VALUE = true;
 
     /**
      * @private
@@ -415,7 +417,7 @@ define([
         Check.typeOf.object('color', color);
         //>>includeEnd('debug');
 
-        if (Color.equals(color, Color.WHITE) && !defined(this._batchValues)) {
+        if (Color.equals(color, DEFAULT_COLOR_VALUE) && !defined(this._batchValues)) {
             // Avoid allocating since the default is white
             return;
         }
@@ -476,7 +478,7 @@ define([
         //>>includeEnd('debug');
 
         if (!defined(this._batchValues)) {
-            return Color.clone(Color.WHITE, result);
+            return Color.clone(DEFAULT_COLOR_VALUE, result);
         }
 
         var batchValues = this._batchValues;
@@ -496,7 +498,7 @@ define([
 
     Cesium3DTileBatchTable.prototype.applyStyle = function(frameState, style) {
         if (!defined(style)) {
-            this.setAllColor(Color.WHITE);
+            this.setAllColor(DEFAULT_COLOR_VALUE);
             this.setAllShow(true);
             return;
         }
@@ -505,8 +507,8 @@ define([
         var length = this.featuresLength;
         for (var i = 0; i < length; ++i) {
             var feature = content.getFeature(i);
-            var color = style.color.evaluateColor(frameState, feature, scratchColor);
-            var show = style.show.evaluate(frameState, feature);
+            var color = defined(style.color) ? style.color.evaluateColor(frameState, feature, scratchColor) : DEFAULT_COLOR_VALUE;
+            var show = defined(style.show) ? style.show.evaluate(frameState, feature) : DEFAULT_SHOW_VALUE;
             this.setColor(i, color);
             this.setShow(i, show);
         }
@@ -1305,10 +1307,6 @@ define([
         // the shader knows not to cull vertices that were originally transparent
         // even though their style is opaque.
         var translucentCommand = (derivedCommand.pass === Pass.TRANSLUCENT);
-
-        if (!translucentCommand) {
-            derivedCommand.pass = Pass.CESIUM_3D_TILE;
-        }
 
         derivedCommand.uniformMap = defined(derivedCommand.uniformMap) ? derivedCommand.uniformMap : {};
         derivedCommand.uniformMap.tile_translucentCommand = function() {

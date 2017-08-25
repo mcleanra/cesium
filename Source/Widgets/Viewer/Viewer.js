@@ -1,4 +1,3 @@
-/*global define*/
 define([
         '../../Core/BoundingSphere',
         '../../Core/Cartesian3',
@@ -1915,8 +1914,6 @@ Either specify options.terrainProvider instead or set options.baseLayerPicker to
         viewer.trackedEntity = undefined;
 
         var boundingSphere = BoundingSphere.fromBoundingSpheres(boundingSpheres);
-        var controller = scene.screenSpaceCameraController;
-        controller.minimumZoomDistance = Math.min(controller.minimumZoomDistance, boundingSphere.radius * 0.5);
 
         if (!viewer._zoomIsFlight) {
             camera.viewBoundingSphere(boundingSphere, viewer._zoomOptions);
