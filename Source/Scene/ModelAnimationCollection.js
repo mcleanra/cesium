@@ -1,4 +1,3 @@
-/*global define*/
 define([
         '../Core/clone',
         '../Core/defaultValue',
@@ -213,7 +212,6 @@ define([
             options.name = animationIds[i];
             scheduledAnimations.push(this.add(options));
         }
-
         return scheduledAnimations;
     };
 
