@@ -6,7 +6,7 @@
 
 [![Docs](https://img.shields.io/badge/docs-online-orange.svg)](http://cesiumjs.org/tutorials.html) [![Greenkeeper badge](https://badges.greenkeeper.io/AnalyticalGraphicsInc/cesium.svg)](https://greenkeeper.io/)
 
-### This fork of Cesium has been modified so that it can be used inside SharePoint.
+### This fork of Cesium has been modified so that it can be used inside SharePoint.  This just means that the .json files have been renamed to .txt files.
 
 -   All JSON files have been changed to .txt
 -   iFrame in the infoBox has been replaced with a div
