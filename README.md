@@ -3,17 +3,19 @@
 </p>
 
 [![Build Status](https://travis-ci.org/AnalyticalGraphicsInc/cesium.svg?branch=master)](https://travis-ci.org/AnalyticalGraphicsInc/cesium)&nbsp;
-[![Docs](https://img.shields.io/badge/docs-online-orange.svg)](http://cesiumjs.org/tutorials.html)
+
+[![Docs](https://img.shields.io/badge/docs-online-orange.svg)](http://cesiumjs.org/tutorials.html) [![Greenkeeper badge](https://badges.greenkeeper.io/AnalyticalGraphicsInc/cesium.svg)](https://greenkeeper.io/)
 
 ### This fork of Cesium has been modified so that it can be used inside SharePoint.
-- All JSON files have been changed to .txt
-- iFrame in the infoBox has been replaced with a div
+
+-   All JSON files have been changed to .txt
+-   iFrame in the infoBox has been replaced with a div
 
 Cesium is a JavaScript library for creating 3D globes and 2D maps in a web browser without a plugin. It uses WebGL for hardware-accelerated graphics, and is cross-platform, cross-browser, and tuned for dynamic-data visualization.
 
 http://cesiumjs.org/
 
-### Get Started ###
+### :rocket: Get Started
 
 Clone the repository.
 
@@ -32,7 +34,10 @@ To deploy: drop the cesium/Build/Cesium folder into SharePoint and reference the
 ```html
 <link rel="stylesheet" href="./cesium/Widgets/widgets.css" />
 <link rel="stylesheet" href="./cesium/Widgets/CesiumWidget/CesiumWidget.css" />
-<link rel="stylesheet" href="./cesium/Widgets/BaseLayerPicker/BaseLayerPicker.css" />
+<link
+    rel="stylesheet"
+    href="./cesium/Widgets/BaseLayerPicker/BaseLayerPicker.css"
+/>
 <script src="./cesium/Cesium.js"></script>
 ```
 

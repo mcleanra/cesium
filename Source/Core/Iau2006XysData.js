@@ -1,22 +1,23 @@
 define([
-        '../ThirdParty/when',
-        './buildModuleUrl',
-        './defaultValue',
-        './defined',
-        './Iau2006XysSample',
-        './JulianDate',
-        './loadJson',
-        './TimeStandard'
-    ], function(
-        when,
-        buildModuleUrl,
-        defaultValue,
-        defined,
-        Iau2006XysSample,
-        JulianDate,
-        loadJson,
-        TimeStandard) {
-    'use strict';
+    "../ThirdParty/when",
+    "./buildModuleUrl",
+    "./defaultValue",
+    "./defined",
+    "./Iau2006XysSample",
+    "./JulianDate",
+    "./Resource",
+    "./TimeStandard"
+], function(
+    when,
+    buildModuleUrl,
+    defaultValue,
+    defined,
+    Iau2006XysSample,
+    JulianDate,
+    Resource,
+    TimeStandard
+) {
+    "use strict";
 
     /**
      * A set of IAU2006 XYS data that is used to evaluate the transformation between the International
@@ -40,10 +41,19 @@ define([
     function Iau2006XysData(options) {
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-        this._xysFileUrlTemplate = options.xysFileUrlTemplate;
+        this._xysFileUrlTemplate = Resource.createIfNeeded(
+            options.xysFileUrlTemplate
+        );
         this._interpolationOrder = defaultValue(options.interpolationOrder, 9);
-        this._sampleZeroJulianEphemerisDate = defaultValue(options.sampleZeroJulianEphemerisDate, 2442396.5);
-        this._sampleZeroDateTT = new JulianDate(this._sampleZeroJulianEphemerisDate, 0.0, TimeStandard.TAI);
+        this._sampleZeroJulianEphemerisDate = defaultValue(
+            options.sampleZeroJulianEphemerisDate,
+            2442396.5
+        );
+        this._sampleZeroDateTT = new JulianDate(
+            this._sampleZeroJulianEphemerisDate,
+            0.0,
+            TimeStandard.TAI
+        );
         this._stepSizeDays = defaultValue(options.stepSizeDays, 1.0);
         this._samplesPerXysFile = defaultValue(options.samplesPerXysFile, 1000);
         this._totalSamples = defaultValue(options.totalSamples, 27426);
@@ -53,18 +63,18 @@ define([
         var order = this._interpolationOrder;
 
         // Compute denominators and X values for interpolation.
-        var denom = this._denominators = new Array(order + 1);
-        var xTable = this._xTable = new Array(order + 1);
+        var denom = (this._denominators = new Array(order + 1));
+        var xTable = (this._xTable = new Array(order + 1));
 
         var stepN = Math.pow(this._stepSizeDays, order);
 
-        for ( var i = 0; i <= order; ++i) {
+        for (var i = 0; i <= order; ++i) {
             denom[i] = stepN;
             xTable[i] = i * this._stepSizeDays;
 
-            for ( var j = 0; j <= order; ++j) {
+            for (var j = 0; j <= order; ++j) {
                 if (j !== i) {
-                    denom[i] *= (i - j);
+                    denom[i] *= i - j;
                 }
             }
 
@@ -96,19 +106,38 @@ define([
      *                 the Terrestrial Time (TT) time standard.
      * @param {Number} stopSecondTT The seconds past noon of the end of the interval to preload, expressed in
      *                 the Terrestrial Time (TT) time standard.
-     * @returns {Promise.<undefined>} A promise that, when resolved, indicates that the requested interval has been
+     * @returns {Promise} A promise that, when resolved, indicates that the requested interval has been
      *                    preloaded.
      */
-    Iau2006XysData.prototype.preload = function(startDayTT, startSecondTT, stopDayTT, stopSecondTT) {
-        var startDaysSinceEpoch = getDaysSinceEpoch(this, startDayTT, startSecondTT);
-        var stopDaysSinceEpoch = getDaysSinceEpoch(this, stopDayTT, stopSecondTT);
+    Iau2006XysData.prototype.preload = function(
+        startDayTT,
+        startSecondTT,
+        stopDayTT,
+        stopSecondTT
+    ) {
+        var startDaysSinceEpoch = getDaysSinceEpoch(
+            this,
+            startDayTT,
+            startSecondTT
+        );
+        var stopDaysSinceEpoch = getDaysSinceEpoch(
+            this,
+            stopDayTT,
+            stopSecondTT
+        );
 
-        var startIndex = (startDaysSinceEpoch / this._stepSizeDays - this._interpolationOrder / 2) | 0;
+        var startIndex =
+            (startDaysSinceEpoch / this._stepSizeDays -
+                this._interpolationOrder / 2) |
+            0;
         if (startIndex < 0) {
             startIndex = 0;
         }
 
-        var stopIndex = (stopDaysSinceEpoch / this._stepSizeDays - this._interpolationOrder / 2) | 0 + this._interpolationOrder;
+        var stopIndex =
+            (stopDaysSinceEpoch / this._stepSizeDays -
+                this._interpolationOrder / 2) |
+            (0 + this._interpolationOrder);
         if (stopIndex >= this._totalSamples) {
             stopIndex = this._totalSamples - 1;
         }
@@ -117,7 +146,7 @@ define([
         var stopChunk = (stopIndex / this._samplesPerXysFile) | 0;
 
         var promises = [];
-        for ( var i = startChunk; i <= stopChunk; ++i) {
+        for (var i = startChunk; i <= stopChunk; ++i) {
             promises.push(requestXysChunk(this, i));
         }
 
@@ -139,7 +168,11 @@ define([
      *
      * @see Iau2006XysData#preload
      */
-    Iau2006XysData.prototype.computeXysRadians = function(dayTT, secondTT, result) {
+    Iau2006XysData.prototype.computeXysRadians = function(
+        dayTT,
+        secondTT,
+        result
+    ) {
         var daysSinceEpoch = getDaysSinceEpoch(this, dayTT, secondTT);
         if (daysSinceEpoch < 0.0) {
             // Can't evaluate prior to the epoch of the data.
@@ -238,19 +271,25 @@ define([
         var chunkUrl;
         var xysFileUrlTemplate = xysData._xysFileUrlTemplate;
         if (defined(xysFileUrlTemplate)) {
-            chunkUrl = xysFileUrlTemplate.replace('{0}', chunkIndex);
+            chunkUrl = xysFileUrlTemplate.getDerivedResource({
+                templateValues: {
+                    "0": chunkIndex
+                }
+            });
         } else {
-            chunkUrl = buildModuleUrl('Assets/IAU2006_XYS/IAU2006_XYS_' + chunkIndex + '.txt');
+            chunkUrl = buildModuleUrl(
+                "Assets/IAU2006_XYS/IAU2006_XYS_" + chunkIndex + ".txt"
+            );
         }
 
-        when(loadJson(chunkUrl), function(chunk) {
+        when(chunkUrl.fetchJson(), function(chunk) {
             xysData._chunkDownloadsInProgress[chunkIndex] = false;
 
             var samples = xysData._samples;
             var newSamples = chunk.samples;
             var startIndex = chunkIndex * xysData._samplesPerXysFile * 3;
 
-            for ( var i = 0, len = newSamples.length; i < len; ++i) {
+            for (var i = 0, len = newSamples.length; i < len; ++i) {
                 samples[startIndex + i] = newSamples[i];
             }
 
